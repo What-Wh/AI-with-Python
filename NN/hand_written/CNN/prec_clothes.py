@@ -1,10 +1,10 @@
 import tensorflow as tf
-from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 
 # Load data
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 # Normalize pixel values to [0, 1]
 x_train = x_train.astype('float32') / 255.0
@@ -43,9 +43,9 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 
-model.fit(x_train_cnn, y_train_cat, epochs=5, validation_split=0.2, callbacks=[early_stop])
+history = model.fit(x_train_cnn, y_train_cat, epochs=5, validation_split=0.2, callbacks=[early_stop])
 
-model.save('num_cnn_model.h5')
+model.save('num_cnn_prec_clothes.h5')
 
 test_loss, test_acc = model.evaluate(x_test_cnn, y_test_cat)
 print("Test accuracy:", test_acc)
@@ -59,3 +59,29 @@ for i in range(5):
     plt.title(f"Predicted: {np.argmax(predictions[i])} - True: {y_test[i]}")
     plt.axis('off')
     plt.show()
+
+Y1 = history.history['accuracy']
+Y1_v = history.history['val_accuracy']
+Y2 = history.history['loss']
+Y2_v = history.history['val_loss']
+X = [1, 2, 3, 4, 5]
+
+plt.figure(figsize=(10,6))
+plt.plot(X, Y1, label='Accuracy', color='blue')
+plt.plot(X, Y1_v, label='Val_accuracy', color='red', linestyle='--')
+plt.title("Epoch / Accuracy")
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10,6))
+plt.plot(X, Y2, label='Loss', color='blue')
+plt.plot(X, Y2_v, label='Val_loss', color='red', linestyle='--')
+plt.title("Epoch / Loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.legend()
+plt.grid(True)
+plt.show()
